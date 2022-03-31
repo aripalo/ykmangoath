@@ -43,7 +43,9 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	accounts, err := ykmangoath.List(ctx, ykmangoath.Options{DeviceID: "12345678"})
+	oath := ykmangoath.New(ctx, "12345678")
+
+	accounts, err := oath.List()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,7 +71,9 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	code, err := ykmangoath.Code(ctx, "<issuer>:<name>", ykmangoath.Options{DeviceID: "12345678"})
+	oath := ykmangoath.New(ctx, "12345678")
+
+	code, err := oath.Code("<issuer>:<name>")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -80,58 +84,45 @@ func main() {
 
 <br/>
 
-### Generate Code with Password Prompt
+### Managing Password
 
-Implements `echo "p4ssword" | ykman --device 12345678 oath accounts code --single '<issuer>:<name>'` with Go.
-
-If you have password protection for your Yubikey OATH application, you may either provide the password directly via `ykmangoath.Options` or provide your own _password prompt function_:
+#### Direct configuration
 
 ```go
-package main
+oath := ykmangoath.New(ctx, "12345678")
+err := oath.SetPassword("p4ssword")
+```
 
-import (
-	"github.com/aripalo/ykmangoath"
-)
+#### Prompt Function
 
+```go
 func myPasswordPrompt(ctx context.Context) (string, error) {
 	return "p4ssword", nil
 }
 
-func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-	defer cancel()
-
-	code, err := ykmangoath.CodeWithPasswordPrompt(
-		ctx,
-		myPasswordPrompt,
-		"<issuer>:<name>",
-		ykmangoath.Options{DeviceID: "12345678"},
-	)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(code)
-}
+oath := ykmangoath.New(ctx, "12345678")
+err := oath.SetPasswordPrompt(myPasswordPrompt)
 ```
 
-This will first try the perform the operation without a password and if it detects a password is required, it will run the _password prompt function_ you provided (`myPasswordPrompt`) and try again with its result.
+##### Retrieve the prompted password
 
-There's also a `ListWithPasswordPrompt` method to achieve the same password prompting functionality for [`List`](#list-accounts).
-
-<br/>
-
-### Retrieving the Password
-
-There are also `ListWithPasswordPromptAndCache` and `CodeWithPasswordPromptAndCache` methods that contain a three return values where the second is the password that succesfully unlocked the Yubikey OATH application:
 ```go
-code, password, err := ykmangoath.CodeWithPasswordPromptAndCache(
-	ctx,
-	myPasswordPrompt,
-	"<issuer>:<name>",
-	ykmangoath.Options{DeviceID: "12345678"},
-)
+func myPasswordPrompt(ctx context.Context) (string, error) {
+	return "p4ssword", nil
+}
+
+oath := ykmangoath.New(ctx, "12345678")
+err := oath.SetPasswordPrompt(myPasswordPrompt)
+// handle err
+
+code, err := oath.Code("<issuer>:<name>")
+// handle err
+// do something with code
+
+password, err := oath.GetPassword()
+// handle err
+// do something with password (e.g. cache it somewhere)
 ```
+
 
 This can be useful if you wish to cache the Yubikey OATH application password for short periods of time in your own application. How you cache it (hopefully somewhat securely) is up to you.
