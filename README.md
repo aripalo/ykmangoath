@@ -1,4 +1,16 @@
-<h1><img src="/assets/ykmangoath.svg" height="32px" alt="logo" /> <code>ykmangoath</code> - Ykman OATH TOPT with Go</h1>
+<div align="center">
+	<br/>
+	<br/>
+	<img width="200" src="assets/ykmangoath.svg" alt="Got" />
+  <h1>
+  <code>ykmangoath</code>
+  <br/>
+  <span>Ykman OATH TOPT with Go</span>
+  </h1>
+  <br/>
+  <br/>
+</div>
+
 
 🚧  **Work-in-Progress**
 
