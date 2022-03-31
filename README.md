@@ -113,6 +113,19 @@ Example Go output:
 
 ### Managing Password
 
+An end-user with Yubikey device may wish to password protect the Yubikey's OATH application. Generally speaking this is a good idea as it adds some protection from theft: A bad actor with someone else's Yubikey device can't actually use the device to generate TOPT MFA codes unless they somehow also know the device password.
+
+The password protection for the Yubikey device's OATH application can be set either via the Yubico Authenticator GUI application or via command-line with `ykman` by running:
+```sh
+ykman oath access change
+```
+
+But, if the device is configured with a password protected OATH application, it means that there needs to be a way to provide the password for `ykmangoath`: Luckily this is one of the benefits of this specific library as it supports just that by either:
+- [Directly Assigning](#direct-assign) the password ahead-of-time
+- [Prompt Function](#prompt-function) which you can use to ask the password from end-user
+
+There's also functionality to [retrieve the prompted password](#retrieve-the-prompted-password) given by end-user, so you may implement caching mechanisms to provide a smoother user experience where the end-user doesn't have to type in the password for every Yubikey operation; Remember there are of course tradeoffs with security vs. user experience with caching the password!
+
 #### Direct Assign
 
 ```go
