@@ -60,7 +60,7 @@ Once initialized, you may perform operations on `oathAccounts` such as [`List`](
 
 ### List Accounts
 
-Implements `ykman --device 12345678 oath accounts list` with Go.
+List OATH accounts configured in the Yubikey device:
 
 ```go
 accounts, err := oathAccounts.List()
@@ -71,11 +71,23 @@ if err != nil {
 fmt.Println(accounts)
 ```
 
+The above is the same as running the following in your terminal:
+```sh
+ykman --device 12345678 oath accounts list
+```
+
+Example Go output:
+```go
+[
+  "Amazon Web Services:john.doe@example",
+]
+```
+
 <br/>
 
 ### Request Code
 
-Implements `ykman --device 12345678 oath accounts code --single '<issuer>:<name>'` with Go.
+Requests a _Time-based one-time password_ (TOPT) 6-digit code for given account (such as "<issuer>:<name>") from Yubikey OATH application.
 
 ```go
 account := "<issuer>:<name>"
@@ -85,6 +97,16 @@ if err != nil {
 }
 
 fmt.Println(code)
+```
+
+The above is the same as running the following in your terminal:
+```sh
+ykman --device 12345678 oath accounts code --single '<issuer>:<name>'
+```
+
+Example Go output:
+```go
+"123456"
 ```
 
 <br/>
