@@ -138,7 +138,8 @@ code, err := oathAccounts.Code("<issuer>:<name>")
 
 password, err := oathAccounts.GetPassword()
 // handle err
-// do something with password (e.g. cache it somewhere)
+// do something with password (e.g. cache it somewhere):
+myCacheSolution.Set(password) // ... just an example
 ```
 
 
