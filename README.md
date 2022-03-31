@@ -16,10 +16,13 @@ Hence, this package, which covers those features! Big thanks to [`joshdk/ykmango
 
 ## Installation
 
-Requires:
+### Requirements
+
 - Yubikey Series 5 device (or newer with a `OATH TOPT` support)
-- [`ykman`](https://developers.yubico.com/yubikey-manager/) Yubikey Manager CLI
+- [`ykman`](https://developers.yubico.com/yubikey-manager/) Yubikey Manager CLI as a runtime dependency
 - Go `1.18` or newer (for development)
+
+### Get it
 
 ```sh
 go get -u github.com/aripalo/ykmangoath
