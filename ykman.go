@@ -40,6 +40,13 @@ func executeYkman(ctx context.Context, options ykmanOptions) (string, error) {
 	// define the ykman command to be run
 	cmd := exec.CommandContext(ctx, "ykman", args...)
 
+	// in case a password is provided, provide it to ykman via stdin
+	// it's better to pass it in via stdin as it will fail on empty string immediately
+	// if the oath is password protected
+	var b bytes.Buffer
+	b.Write([]byte(fmt.Sprintf("%s\n", options.password)))
+	cmd.Stdin = &b
+
 	// redirect stdout & stderr into byte buffer
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
@@ -65,10 +72,6 @@ func defineYkmanArgs(options ykmanOptions) []string {
 	// setup oath application arguments
 	args = append(args, "oath", "accounts")
 	args = append(args, options.args...)
-
-	if options.password != "" {
-		args = append(args, "--password", options.password)
-	}
 
 	return args
 }

@@ -27,11 +27,6 @@ func TestDefineYkmanArgs(t *testing.T) {
 			received: []string{"--device", "12345678", "oath", "accounts"},
 		},
 		{
-			name:     "with password",
-			input:    ykmanOptions{password: "p4ssword"},
-			received: []string{"oath", "accounts", "--password", "p4ssword"},
-		},
-		{
 			name:     "list accounts",
 			input:    ykmanOptions{args: []string{"list"}},
 			received: []string{"oath", "accounts", "list"},
@@ -43,8 +38,8 @@ func TestDefineYkmanArgs(t *testing.T) {
 		},
 		{
 			name:     "code for account with all options",
-			input:    ykmanOptions{serial: "12345678", password: "p4ssword", args: []string{"code", "--single", "Amazon Web Services:john.doe@example"}},
-			received: []string{"--device", "12345678", "oath", "accounts", "code", "--single", "Amazon Web Services:john.doe@example", "--password", "p4ssword"},
+			input:    ykmanOptions{serial: "12345678", args: []string{"code", "--single", "Amazon Web Services:john.doe@example"}},
+			received: []string{"--device", "12345678", "oath", "accounts", "code", "--single", "Amazon Web Services:john.doe@example"},
 		},
 	}
 
