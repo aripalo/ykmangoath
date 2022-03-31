@@ -97,7 +97,7 @@ Example Go output:
 
 ## Request Code
 
-Requests a _Time-based one-time password_ (TOPT) 6-digit code for given account (such as "<issuer>:<name>") from Yubikey OATH application.
+Requests a _Time-based One-Time Password_ (TOPT) 6-digit code for given account (such as "<issuer>:<name>") from Yubikey OATH application.
 
 ```go
 account := "<issuer>:<name>"
@@ -197,7 +197,7 @@ This can be useful if you wish to cache the Yubikey OATH application password fo
 ### This tool is designed only for _retrieval_ of specific information from a Yubikey device:
 
 - List of configured OATH accounts
-- _Time-based one-time password_ (TOPT) code for given OATH account
+- _Time-based One-Time Password_ (TOPT) code for given OATH account
 - ... with a support for password protected Yubikey OATH applications
 
 ### By design, this tool does NOT support:
