@@ -22,7 +22,7 @@ Requires:
 - Go `1.18` or newer (for development)
 
 ```sh
-go get github.com/aripalo/ykmangoath
+go get -u github.com/aripalo/ykmangoath
 ```
 
 <br/>
