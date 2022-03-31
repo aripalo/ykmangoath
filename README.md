@@ -206,11 +206,9 @@ This can be useful if you wish to cache the Yubikey OATH application password fo
 If you need some of the above-mentioned unsupported features, feel free to implement them yourself – for example by forking this library but we will never accept a pull request back into this project which implements those features.
 
 **This tool _may_ implement following features in the future** if needed:
-1. Adding new OATH acccounts
-2. Password protecting a Yubikey device's OATH application given that:
+- https://github.com/aripalo/ykmangoath/issues/1 Adding new OATH acccounts
+- https://github.com/aripalo/ykmangoath/issues/2 Password protecting a Yubikey device's OATH application given that:
     1. there are no OATH accounts configured (i.e. the device OATH application is empty/unused)
     2. the device OATH application does not yet have a password protection enabled
 
-But this is not a promise to implement them. If you feel like it, you can create a Pull Request which implements one of the following:
-1. https://github.com/aripalo/ykmangoath/issues/1
-2. https://github.com/aripalo/ykmangoath/issues/2
+But this is not a promise to implement them. If you feel like it, you can create a Pull Request!
