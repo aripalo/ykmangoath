@@ -7,7 +7,7 @@ Yet another **Go wrapper for [`ykman`](https://developers.yubico.com/yubikey-man
 There are already [some](https://github.com/99designs/aws-vault/blob/master/prompt/ykman.go) [packages](https://github.com/joshdk/ykmango) out there which already wrap Yubikey CLI – `ykman` – for Go to manage OATH TOPT, but they lack all or some of the following features:
 
 - Go Context support (handy for timeouts/cancellation etc)
-- Multiple Yubikeys (identified by _device ID_)
+- Multiple Yubikeys (identified by Device Serial Number)
 - Password protected Yubikey OATH applications
 
 Hence, this package, which covers those features! Big thanks to [`joshdk/ykmango`](https://github.com/joshdk/ykmango) and [`99designs/aws-vault`](https://github.com/99designs/aws-vault/blob/master/prompt/ykman.go) as they heavily influenced this library. Also this library is somewhat based on the previous implementation of Yubikey support in [`aripalo/vegas-credentials`](https://github.com/aripalo/vegas-credentials) (which this partly replaces in near future).
