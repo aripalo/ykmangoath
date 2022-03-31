@@ -33,15 +33,20 @@ go get -u github.com/aripalo/ykmangoath
 ## Getting Started
 
 This `ykmangoath` library provides a struct `OathAccounts` which represents a the main functionality of Yubikey OATH accounts (via `ykman` CLI). You can “create an instance” of the struct with `ykmangoath.New` and provide the following:
-- Context (type of `context.Context`) which allows you to implement for example cancellations and timeouts
+- Context (type of `context.Context`) which allows you to implement things like cancellations and timeouts
 - Device Serial Number which is the 8+ digit serial number of your Yubikey device which you can find:
-  - Printed in the back of your physical Yubikey device
-  - By running command `ykman info` in your terminal
+  - printed in the back of your physical Yubikey device
+  - by running command `ykman info` in your terminal
 
 ```go
 package main
 
 import (
+	"context"
+	"fmt"
+	"log"
+	"time"
+
 	"github.com/aripalo/ykmangoath"
 )
 
