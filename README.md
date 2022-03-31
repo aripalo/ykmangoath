@@ -27,9 +27,7 @@ go get github.com/aripalo/ykmangoath
 
 <br/>
 
-## Usage
-
-### Initialization
+## Initialization
 
 This `ykmangoath` library provides a struct `OathAccounts` which represents a the main functionality of Yubikey OATH accounts (via `ykman` CLI). You can “create an instance” of the struct with `ykmangoath.New` and provide the following:
 - Context (type of `context.Context`) which allows you to implement for example cancellations and timeouts
@@ -58,7 +56,7 @@ Once initialized, you may perform operations on `oathAccounts` such as [`List`](
 
 <br/>
 
-### List Accounts
+## List Accounts
 
 List OATH accounts configured in the Yubikey device:
 
@@ -85,7 +83,7 @@ Example Go output:
 
 <br/>
 
-### Request Code
+## Request Code
 
 Requests a _Time-based one-time password_ (TOPT) 6-digit code for given account (such as "<issuer>:<name>") from Yubikey OATH application.
 
@@ -111,7 +109,7 @@ Example Go output:
 
 <br/>
 
-### Managing Password
+## Managing Password
 
 An end-user with Yubikey device may wish to password protect the Yubikey's OATH application. Generally speaking this is a good idea as it adds some protection from theft: A bad actor with someone else's Yubikey device can't actually use the device to generate TOPT MFA codes unless they somehow also know the device password.
 
@@ -126,7 +124,7 @@ But, if the device is configured with a password protected OATH application, it 
 
 There's also functionality to [retrieve the prompted password](#retrieve-the-prompted-password) given by end-user, so you may implement caching mechanisms to provide a smoother user experience where the end-user doesn't have to type in the password for every Yubikey operation; Remember there are of course tradeoffs with security vs. user experience with caching the password!
 
-#### Direct Assign
+## Direct Assign
 
 ```go
 err := oathAccounts.SetPassword("p4ssword")
@@ -141,7 +139,7 @@ The above is the same as running the following in your terminal:
 ykman --device 12345678 oath accounts code --single '<issuer>:<name>' --password 'p4ssword'
 ```
 
-#### Prompt Function
+## Prompt Function
 
 Instead of assigning the password directly ahead-of-time, you may provide a **_password prompt function_ that will be executed only if password is required**. Often you'll use this to actually ask the password from end-user – either via terminal `stdin` or by showing a GUI dialog with tools such as [`ncruces/zenity`](https://github.com/ncruces/zenity).
 
@@ -156,7 +154,7 @@ func myPasswordPrompt(ctx context.Context) (string, error) {
 err := oathAccounts.SetPasswordPrompt(myPasswordPrompt)
 ```
 
-##### Retrieve the prompted Password
+### Retrieve the prompted Password
 
 ```go
 func myPasswordPrompt(ctx context.Context) (string, error) {
