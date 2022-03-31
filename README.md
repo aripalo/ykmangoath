@@ -17,8 +17,9 @@ Hence, this package, which covers those features! Big thanks to [`joshdk/ykmango
 ## Installation
 
 Requires:
-- Go `1.18` or newer
+- Yubikey Series 5 device (or newer with a `OATH TOPT` support)
 - [`ykman`](https://developers.yubico.com/yubikey-manager/) Yubikey Manager CLI
+- Go `1.18` or newer (for development)
 
 ```sh
 go get github.com/aripalo/ykmangoath
@@ -28,82 +29,92 @@ go get github.com/aripalo/ykmangoath
 
 ## Usage
 
+### Initialization
+
+This `ykmangoath` library provides a struct `OathAccounts` which represents a the main functionality of Yubikey OATH accounts (via `ykman` CLI). You can “create an instance” of the struct with `ykmangoath.New` and provide the following:
+- Context (type of `context.Context`) which allows you to implement for example cancellations and timeouts
+- Device Serial Number which is the 8+ digit serial number of your Yubikey device which you can find:
+  - Printed in the back of your physical Yubikey device
+  - By running command `ykman info` in your terminal
+
+```go
+package main
+
+import (
+	"github.com/aripalo/ykmangoath"
+)
+
+func main() {
+	myTimeout := 20*time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), myTimeout)
+	defer cancel()
+
+	deviceSerial := "12345678" // can be empty string if you only use one Yubikey device
+	oathAccounts := ykmangoath.New(ctx, deviceSerial)
+}
+```
+
+Once initialized, you may perform operations on it such as [`List`](#list-accounts) or [`Code`](#request-code) methods. See [Managing Password](#managing-password) if your Yubikey OATH application is password protected.
+
 ### List Accounts
 
 Implements `ykman --device 12345678 oath accounts list` with Go.
 
 ```go
-package main
-
-import (
-	"github.com/aripalo/ykmangoath"
-)
-
-func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-	defer cancel()
-
-	deviceSerial := "12345678"
-	oathAccounts := ykmangoath.New(ctx, deviceSerial)
-
-	accounts, err := oathAccounts.List()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(accounts)
+accounts, err := oathAccounts.List()
+if err != nil {
+  log.Fatal(err)
 }
+
+fmt.Println(accounts)
 ```
 
 <br/>
 
-### Generate Code
+### Request Code
 
 Implements `ykman --device 12345678 oath accounts code --single '<issuer>:<name>'` with Go.
 
 ```go
-package main
-
-import (
-	"github.com/aripalo/ykmangoath"
-)
-
-func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-	defer cancel()
-
-	deviceSerial := "12345678"
-	oathAccounts := ykmangoath.New(ctx, deviceSerial)
-
-	account := "<issuer>:<name>"
-	code, err := oathAccounts.Code(account)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(code)
+account := "<issuer>:<name>"
+code, err := oathAccounts.Code(account)
+if err != nil {
+  log.Fatal(err)
 }
+
+fmt.Println(code)
 ```
 
 <br/>
 
 ### Managing Password
 
-#### Direct configuration
+#### Direct Assign
 
 ```go
-oathAccounts := ykmangoath.New(ctx, deviceSerial)
 err := oathAccounts.SetPassword("p4ssword")
+// handle err
+account := "<issuer>:<name>"
+code, err := oathAccounts.Code(account)
+// handle err
+```
+
+The above is the same as running the following in your terminal:
+```sh
+ykman --device 12345678 oath accounts code --single '<issuer>:<name>' --password 'p4ssword'
 ```
 
 #### Prompt Function
+
+Instead of assigning the password directly ahead-of-time, you may provide a **_password prompt function_ that will be executed only if password is required**.
+
+It must return a password `string` (which can be empty) and an `error` (which of course could be `nil` on success). The password prompt function will also receive the `context.Context` given in `ykmangoath.New` initialization, therefore your password prompt function can be cancelled (for example due to timeout).
 
 ```go
 func myPasswordPrompt(ctx context.Context) (string, error) {
 	return "p4ssword", nil
 }
 
-oathAccounts := ykmangoath.New(ctx, deviceSerial)
 err := oathAccounts.SetPasswordPrompt(myPasswordPrompt)
 ```
 
@@ -114,7 +125,6 @@ func myPasswordPrompt(ctx context.Context) (string, error) {
 	return "p4ssword", nil
 }
 
-oathAccounts := ykmangoath.New(ctx, deviceSerial)
 err := oathAccounts.SetPasswordPrompt(myPasswordPrompt)
 // handle err
 
