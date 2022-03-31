@@ -54,7 +54,7 @@ func main() {
 }
 ```
 
-Once initialized, you may perform operations on it such as [`List`](#list-accounts) or [`Code`](#request-code) methods. See [Managing Password](#managing-password) if your Yubikey OATH application is password protected.
+Once initialized, you may perform operations on `oathAccounts` such as [`List`](#list-accounts) or [`Code`](#request-code) methods. See [Managing Password](#managing-password) if your Yubikey OATH application is password protected.
 
 <br/>
 
