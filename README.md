@@ -1,4 +1,4 @@
-# <img src="/assets/ykmangoath.svg" width="100px" alt="logo" /> `ykmangoath` - Ykman OATH TOPT with Go
+<h1><img src="/assets/ykmangoath.svg" width="100px" alt="logo" /> <code>ykmangoath</code> - Ykman OATH TOPT with Go</h1>
 
 🚧  **Work-in-Progress**
 
