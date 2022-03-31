@@ -9,41 +9,46 @@ import (
 	"syscall"
 )
 
+// queryOptions controls the ykman operation performed
 type queryOptions struct {
 	deviceID string
 	password string
 	args     []string
 }
 
+// performQuery executes ykman with given options and handles most common errors
 func performQuery(ctx context.Context, options queryOptions) (error, string) {
 
 	args := []string{}
 
+	// only apply device argument if an id is given
 	if options.deviceID != "" {
 		args = append(args, "--device", options.deviceID)
 	}
 
+	// setup oath application arguments
 	args = append(args, "oath", "accounts")
 	args = append(args, options.args...)
 
+	// define the ykman command to be run
 	cmd := exec.CommandContext(ctx, "ykman", args...)
 
-	// In case a password is provided, provide it to ykman via stdin
+	// in case a password is provided, provide it to ykman via stdin
 	var b bytes.Buffer
 	b.Write([]byte(fmt.Sprintf("%s\n", options.password)))
 	cmd.Stdin = &b
 
+	// map stdout & stderr into variables
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
 	cmd.Stderr = &errb
 
+	// execute the ykman command
 	err := cmd.Run()
 
+	// retrieve the output
 	outputErr := errb.String()
 	output := outb.String()
-
-	//combined, err := cmd.CombinedOutput()
-	//output := string(combined)
 
 	if err != nil {
 
@@ -100,5 +105,6 @@ func performQuery(ctx context.Context, options queryOptions) (error, string) {
 		return err, ""
 	}
 
+	// finally return the ykman output
 	return err, output
 }

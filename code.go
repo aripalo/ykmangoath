@@ -9,6 +9,7 @@ import (
 // yubikeyTokenFindPattern describes the regexp that will match OATH TOPT MFA token code from Yubikey
 var yubikeyTokenFindPattern = regexp.MustCompile(`\d{6}\d*$`)
 
+// Code generates a OATH TOPT code from the Yubikey
 func Code(ctx context.Context, account string, options Options) (error, string) {
 
 	queryOptions := queryOptions{
@@ -26,6 +27,7 @@ func Code(ctx context.Context, account string, options Options) (error, string) 
 	return parseCode(output)
 }
 
+// CodeWithPasswordPrompt generates a OATH TOPT code from the Yubikey with a password prompt support
 func CodeWithPasswordPrompt(
 	ctx context.Context,
 	passwordPrompt func(ctx context.Context) (error, string),
@@ -36,6 +38,7 @@ func CodeWithPasswordPrompt(
 	return err, result
 }
 
+// CodeWithPasswordPromptAndCache generates a OATH TOPT code from the Yubikey with a password prompt support and also returns the password which succesfully unlocked the OATH application for caching purposes
 func CodeWithPasswordPromptAndCache(
 	ctx context.Context,
 	passwordPrompt func(ctx context.Context) (error, string),
@@ -62,6 +65,7 @@ func CodeWithPasswordPromptAndCache(
 	return err, result, password
 }
 
+// parseCode retrieves the generated 6 digit OATH TOPT code from output
 func parseCode(output string) (error, string) {
 	result := yubikeyTokenFindPattern.FindString(strings.TrimSpace(output))
 	if result == "" {

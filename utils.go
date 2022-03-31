@@ -2,6 +2,7 @@ package ykmangoath
 
 import "strings"
 
+// getLines splits multiline strings to arrays of strings
 func getLines(output string) []string {
 
 	lines := []string{}
