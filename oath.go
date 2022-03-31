@@ -20,59 +20,59 @@ type OathAccounts struct {
 
 // New defines a new instance of OathAccounts.
 func New(ctx context.Context, serial string) (OathAccounts, error) {
-	o := OathAccounts{ctx: ctx}
+	oa := OathAccounts{ctx: ctx}
 	result := deviceSerialPattern.FindString(serial)
 	if result == "" {
-		return o, fmt.Errorf("%w: %v", ErrDeviceSerial, serial)
+		return oa, fmt.Errorf("%w: %v", ErrDeviceSerial, serial)
 	}
-	o.serial = serial
-	return o, nil
+	oa.serial = serial
+	return oa, nil
 }
 
 // GetSerial returns the currently configured Yubikey device serial.
-func (o *OathAccounts) GetSerial() string {
-	return o.serial
+func (oa *OathAccounts) GetSerial() string {
+	return oa.serial
 }
 
 // SetPassword directly configures the Yubikey OATH application password.
 // Mutually exclusive with SetPasswordPrompt.
-func (o *OathAccounts) SetPassword(password string) error {
-	if o.passwordPrompt != nil {
+func (oa *OathAccounts) SetPassword(password string) error {
+	if oa.passwordPrompt != nil {
 		return fmt.Errorf("%w: password prompt already set", ErrPasswordSetup)
 	}
-	o.password = password
+	oa.password = password
 	return nil
 }
 
 // SetPasswordPrompt configures a function that will be called upon if/when
 // the Yubikey OATH application password is required.
 // Mutually exclusive with SetPassword.
-func (o *OathAccounts) SetPasswordPrompt(prompt func(ctx context.Context) (string, error)) error {
-	if o.password != "" {
+func (oa *OathAccounts) SetPasswordPrompt(prompt func(ctx context.Context) (string, error)) error {
+	if oa.password != "" {
 		return fmt.Errorf("%w: password already set", ErrPromptSetup)
 	}
-	o.passwordPrompt = prompt
+	oa.passwordPrompt = prompt
 	return nil
 }
 
 // GetPassword returns the password that successfully unlocked the Yubikey OATH application.
-func (o *OathAccounts) GetPassword() (string, error) {
-	if o.password == "" {
+func (oa *OathAccounts) GetPassword() (string, error) {
+	if oa.password == "" {
 		return "", ErrNoPassword
 	}
-	return o.password, nil
+	return oa.password, nil
 }
 
 // List returns a list of configured accounts in the Yubikey OATH application.
-func (o *OathAccounts) List() ([]string, error) {
+func (oa *OathAccounts) List() ([]string, error) {
 	queryOptions := ykmanOptions{
-		serial:   o.serial,
-		password: o.password,
+		serial:   oa.serial,
+		password: oa.password,
 		args:     []string{"list"},
 	}
 
-	o.ensurePrompt()
-	output, err := executeYkmanWithPrompt(o.ctx, queryOptions, o.passwordPrompt)
+	oa.ensurePrompt()
+	output, err := executeYkmanWithPrompt(oa.ctx, queryOptions, oa.passwordPrompt)
 
 	if err != nil {
 		return nil, err
@@ -83,15 +83,15 @@ func (o *OathAccounts) List() ([]string, error) {
 
 // Code requests a Time-based one-time password (TOPT) 6-digit code for given
 // account (such as "<issuer>:<name>") from Yubikey OATH application.
-func (o *OathAccounts) Code(account string) (string, error) {
+func (oa *OathAccounts) Code(account string) (string, error) {
 	queryOptions := ykmanOptions{
-		serial:   o.serial,
-		password: o.password,
+		serial:   oa.serial,
+		password: oa.password,
 		args:     []string{"code", "--single", account},
 	}
 
-	o.ensurePrompt()
-	output, err := executeYkmanWithPrompt(o.ctx, queryOptions, o.passwordPrompt)
+	oa.ensurePrompt()
+	output, err := executeYkmanWithPrompt(oa.ctx, queryOptions, oa.passwordPrompt)
 
 	if err != nil {
 		return output, err
@@ -101,10 +101,10 @@ func (o *OathAccounts) Code(account string) (string, error) {
 }
 
 // ensurePrompt checks if prompt is not configured by user and then assigns
-// a simple function as prompt that returns o.password.
-func (o *OathAccounts) ensurePrompt() {
-	if o.passwordPrompt == nil {
-		o.passwordPrompt = func(ctx context.Context) (string, error) { return o.password, nil }
+// a simple function as prompt that returns oa.password.
+func (oa *OathAccounts) ensurePrompt() {
+	if oa.passwordPrompt == nil {
+		oa.passwordPrompt = func(ctx context.Context) (string, error) { return oa.password, nil }
 	}
 }
 

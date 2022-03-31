@@ -43,9 +43,10 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	oath := ykmangoath.New(ctx, "12345678")
+	deviceSerial := "12345678"
+	oathAccounts := ykmangoath.New(ctx, deviceSerial)
 
-	accounts, err := oath.List()
+	accounts, err := oathAccounts.List()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -71,9 +72,11 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	oath := ykmangoath.New(ctx, "12345678")
+	deviceSerial := "12345678"
+	oathAccounts := ykmangoath.New(ctx, deviceSerial)
 
-	code, err := oath.Code("<issuer>:<name>")
+	account := "<issuer>:<name>"
+	code, err := oathAccounts.Code(account)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -89,8 +92,8 @@ func main() {
 #### Direct configuration
 
 ```go
-oath := ykmangoath.New(ctx, "12345678")
-err := oath.SetPassword("p4ssword")
+oathAccounts := ykmangoath.New(ctx, deviceSerial)
+err := oathAccounts.SetPassword("p4ssword")
 ```
 
 #### Prompt Function
@@ -100,8 +103,8 @@ func myPasswordPrompt(ctx context.Context) (string, error) {
 	return "p4ssword", nil
 }
 
-oath := ykmangoath.New(ctx, "12345678")
-err := oath.SetPasswordPrompt(myPasswordPrompt)
+oathAccounts := ykmangoath.New(ctx, deviceSerial)
+err := oathAccounts.SetPasswordPrompt(myPasswordPrompt)
 ```
 
 ##### Retrieve the prompted password
@@ -111,15 +114,15 @@ func myPasswordPrompt(ctx context.Context) (string, error) {
 	return "p4ssword", nil
 }
 
-oath := ykmangoath.New(ctx, "12345678")
-err := oath.SetPasswordPrompt(myPasswordPrompt)
+oathAccounts := ykmangoath.New(ctx, deviceSerial)
+err := oathAccounts.SetPasswordPrompt(myPasswordPrompt)
 // handle err
 
-code, err := oath.Code("<issuer>:<name>")
+code, err := oathAccounts.Code("<issuer>:<name>")
 // handle err
 // do something with code
 
-password, err := oath.GetPassword()
+password, err := oathAccounts.GetPassword()
 // handle err
 // do something with password (e.g. cache it somewhere)
 ```
