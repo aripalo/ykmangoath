@@ -27,7 +27,7 @@ go get github.com/aripalo/ykmangoath
 
 <br/>
 
-## Initialization
+## Getting Started
 
 This `ykmangoath` library provides a struct `OathAccounts` which represents a the main functionality of Yubikey OATH accounts (via `ykman` CLI). You can “create an instance” of the struct with `ykmangoath.New` and provide the following:
 - Context (type of `context.Context`) which allows you to implement for example cancellations and timeouts
