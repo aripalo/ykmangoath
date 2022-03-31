@@ -143,4 +143,4 @@ myCacheSolution.Set(password) // ... just an example
 ```
 
 
-This can be useful if you wish to cache the Yubikey OATH application password for short periods of time in your own application. How you cache it (hopefully somewhat securely) is up to you.
+This can be useful if you wish to cache the Yubikey OATH application password for short periods of time in your own application, so that the user doesn't have to type in the password everytime (remember: the physical touch of the Yubikey device should be the _actual_ second factor). How you cache it (hopefully somewhat securely) is up to you.
