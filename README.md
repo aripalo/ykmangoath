@@ -43,7 +43,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	err, accounts := ykmangoath.List(ctx, ykmangoath.Options{DeviceID: "12345678"})
+	accounts, err := ykmangoath.List(ctx, ykmangoath.Options{DeviceID: "12345678"})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,7 +69,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	err, code := ykmangoath.Code(ctx, "<issuer>:<name>", ykmangoath.Options{DeviceID: "12345678"})
+	code, err := ykmangoath.Code(ctx, "<issuer>:<name>", ykmangoath.Options{DeviceID: "12345678"})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -93,15 +93,15 @@ import (
 	"github.com/aripalo/ykmangoath"
 )
 
-func myPasswordPrompt(ctx context.Context) (error, string) {
-	return nil, "p4ssword"
+func myPasswordPrompt(ctx context.Context) (string, error) {
+	return "p4ssword", nil
 }
 
 func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	err, code := ykmangoath.CodeWithPasswordPrompt(
+	code, err := ykmangoath.CodeWithPasswordPrompt(
 		ctx,
 		myPasswordPrompt,
 		"<issuer>:<name>",
@@ -124,9 +124,9 @@ There's also a `ListWithPasswordPrompt` method to achieve the same password prom
 
 ### Retrieving the Password
 
-There are also `ListWithPasswordPromptAndCache` and `CodeWithPasswordPromptAndCache` methods that contain a third return value: The password that succesfully unlocked the Yubikey OATH application:
+There are also `ListWithPasswordPromptAndCache` and `CodeWithPasswordPromptAndCache` methods that contain a three return values where the second is the password that succesfully unlocked the Yubikey OATH application:
 ```go
-err, code, password := ykmangoath.CodeWithPasswordPromptAndCache(
+code, password, err := ykmangoath.CodeWithPasswordPromptAndCache(
 	ctx,
 	myPasswordPrompt,
 	"<issuer>:<name>",

@@ -16,8 +16,11 @@ type queryOptions struct {
 	args     []string
 }
 
+// execCommandContext is a placeholder for exec.CommandContext that can be overwritten for testing purposes
+var execCommandContext = exec.CommandContext
+
 // performQuery executes ykman with given options and handles most common errors
-func performQuery(ctx context.Context, options queryOptions) (error, string) {
+func performQuery(ctx context.Context, options queryOptions) (string, error) {
 
 	args := []string{}
 
@@ -31,7 +34,7 @@ func performQuery(ctx context.Context, options queryOptions) (error, string) {
 	args = append(args, options.args...)
 
 	// define the ykman command to be run
-	cmd := exec.CommandContext(ctx, "ykman", args...)
+	cmd := execCommandContext(ctx, "ykman", args...)
 
 	// in case a password is provided, provide it to ykman via stdin
 	var b bytes.Buffer
@@ -55,7 +58,7 @@ func performQuery(ctx context.Context, options queryOptions) (error, string) {
 		// check for ykman process existance
 		if execErr, ok := err.(*exec.Error); ok {
 			if execErr.Err == exec.ErrNotFound {
-				return ErrCommandNotFound, ""
+				return "", ErrCommandNotFound
 			}
 		}
 
@@ -64,47 +67,47 @@ func performQuery(ctx context.Context, options queryOptions) (error, string) {
 			status := exitErr.Sys().(syscall.WaitStatus).Signal()
 			if status == syscall.SIGINT {
 				fmt.Println("SIGINT")
-				return ErrCommandInterrupted, ""
+				return "", ErrCommandInterrupted
 			}
 			if status == syscall.SIGTERM {
 				fmt.Println("SIGTERM")
-				return ErrCommandInterrupted, ""
+				return "", ErrCommandInterrupted
 			}
 		}
 
 		// check for yubikey device connection
 		if strings.Contains(outputErr, "Failed connecting to the YubiKey") {
-			return ErrDeviceNotFound, ""
+			return "", ErrDeviceNotFound
 		}
 
 		// check for yubikey device removal
 		if strings.Contains(outputErr, "Failed to transmit with protocol") {
-			return ErrDeviceRemoved, ""
+			return "", ErrDeviceRemoved
 		}
 
 		// check for yubikey device timeout
 		if strings.Contains(outputErr, "Touch account timed out!") {
-			return ErrDeviceTimeout, ""
+			return "", ErrDeviceTimeout
 		}
 
 		// check for oath password protection
 		if strings.Contains(outputErr, "Authentication to the YubiKey failed. Wrong password?") {
 			if options.password == "" {
-				return ErrOathAccountPasswordProtected, ""
+				return "", ErrOathAccountPasswordProtected
 			} else {
-				return ErrOathAccountPasswordIncorrect, ""
+				return "", ErrOathAccountPasswordIncorrect
 			}
 		}
 
 		// check for oath account mismatch
 		if strings.Contains(outputErr, "No matching account found.") {
-			return ErrOathAccountNotFound, ""
+			return "", ErrOathAccountNotFound
 		}
 
 		// catch-all error
-		return err, ""
+		return "", err
 	}
 
 	// finally return the ykman output
-	return err, output
+	return output, err
 }

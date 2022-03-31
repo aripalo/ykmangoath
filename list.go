@@ -5,7 +5,7 @@ import (
 )
 
 // ListWithPasswordPromptAndCache lists available OATH TOPT accounts configured in the Yubikey
-func List(ctx context.Context, options Options) (error, []string) {
+func List(ctx context.Context, options Options) ([]string, error) {
 
 	queryOptions := queryOptions{
 		deviceID: options.DeviceID,
@@ -13,49 +13,49 @@ func List(ctx context.Context, options Options) (error, []string) {
 		args:     []string{"list"},
 	}
 
-	err, output := performQuery(ctx, queryOptions)
+	output, err := performQuery(ctx, queryOptions)
 
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
 
-	return nil, getLines(output)
+	return getLines(output), nil
 }
 
 // ListWithPasswordPromptAndCache lists available OATH TOPT accounts configured in the Yubikey with a password prompt support
 func ListWithPasswordPrompt(
 	ctx context.Context,
-	passwordPrompt func(ctx context.Context) (error, string),
+	passwordPrompt func(ctx context.Context) (string, error),
 	options Options,
-) (error, []string) {
+) ([]string, error) {
 
-	err, result, _ := ListWithPasswordPromptAndCache(ctx, passwordPrompt, options)
-	return err, result
+	result, _, err := ListWithPasswordPromptAndCache(ctx, passwordPrompt, options)
+	return result, err
 }
 
 // ListWithPasswordPromptAndCache lists available OATH TOPT accounts configured in the Yubikey with a password prompt support and also returns the password which succesfully unlocked the OATH application for caching purposes
 func ListWithPasswordPromptAndCache(
 	ctx context.Context,
-	passwordPrompt func(ctx context.Context) (error, string),
+	passwordPrompt func(ctx context.Context) (string, error),
 	options Options,
-) (error, []string, string) {
+) ([]string, string, error) {
 
 	if options.Password != "" {
-		return ErrPasswordNotAllowedWithPrompt, nil, ""
+		return nil, "", ErrPasswordNotAllowedWithPrompt
 	}
 
-	err, result := List(ctx, Options{DeviceID: options.DeviceID})
+	result, err := List(ctx, Options{DeviceID: options.DeviceID})
 
 	if err != ErrOathAccountPasswordProtected {
-		return err, result, ""
+		return result, "", err
 	}
 
-	err, password := passwordPrompt(ctx)
+	password, err := passwordPrompt(ctx)
 	if err != nil {
-		return err, nil, ""
+		return nil, "", err
 	}
 
-	err, result = List(ctx, Options{DeviceID: options.DeviceID, Password: password})
+	result, err = List(ctx, Options{DeviceID: options.DeviceID, Password: password})
 
-	return err, result, password
+	return result, password, err
 }
