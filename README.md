@@ -194,18 +194,21 @@ This can be useful if you wish to cache the Yubikey OATH application password fo
 
 ## Design
 
-**This tool is designed only for _retrieval_ of specific information from a Yubikey device:**
+### This tool is designed only for _retrieval_ of specific information from a Yubikey device:
+
 - List of configured OATH accounts
 - _Time-based one-time password_ (TOPT) code for given OATH account
 - ... with a support for password protected Yubikey OATH applications
 
-**By design, this tool does NOT support:**
+### By design, this tool does NOT support:
+
 - Setting or changing the Yubikey OATH application password: Configuring the password should be an explicit end-user operation (which they can do via Yubico Authenticator GUI or `ykman` CLI) – We do not want to enable situations where this library renders end-user's Yubikey OATH accounts useless by setting a password unknown to the end-user.
 - Removing or renaming OATH accounts from the Yubikey device: This is another area where – either by accident or on purpose – one could harm the end-user.
 
 If you need some of the above-mentioned unsupported features, feel free to implement them yourself – for example by forking this library but we will never accept a pull request back into this project which implements those features.
 
-**This tool _may_ implement following features in the future** if needed:
+## This tool _may_ implement following features in the future:
+
 - https://github.com/aripalo/ykmangoath/issues/1 Adding new OATH acccounts
 - https://github.com/aripalo/ykmangoath/issues/2 Password protecting a Yubikey device's OATH application given that:
     1. there are no OATH accounts configured (i.e. the device OATH application is empty/unused)
