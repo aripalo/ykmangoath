@@ -108,7 +108,7 @@ ykman --device 12345678 oath accounts code --single '<issuer>:<name>' --password
 
 #### Prompt Function
 
-Instead of assigning the password directly ahead-of-time, you may provide a **_password prompt function_ that will be executed only if password is required**.
+Instead of assigning the password directly ahead-of-time, you may provide a **_password prompt function_ that will be executed only if password is required**. Often you'll use this to actually ask the password from end-user – either via terminal `stdin` or by showing a GUI dialog with tools such as [`ncruces/zenity`](https://github.com/ncruces/zenity).
 
 It must return a password `string` (which can be empty) and an `error` (which of course could be `nil` on success). The password prompt function will also receive the `context.Context` given in `ykmangoath.New` initialization, therefore your password prompt function can be cancelled (for example due to timeout).
 
@@ -120,7 +120,7 @@ func myPasswordPrompt(ctx context.Context) (string, error) {
 err := oathAccounts.SetPasswordPrompt(myPasswordPrompt)
 ```
 
-##### Retrieve the prompted password
+##### Retrieve the prompted Password
 
 ```go
 func myPasswordPrompt(ctx context.Context) (string, error) {
