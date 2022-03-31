@@ -9,7 +9,7 @@
   </h1>
   <div>
 
-  _Yet another_ Go wrapper for [`ykman`](https://developers.yubico.com/yubikey-manager/) for requesting [OATH TOPT](https://en.wikipedia.org/wiki/Time-based_one-time_password) Multi-Factor Authentication Codes from [Yubikey](https://www.yubico.com/products/yubikey-5-overview/) Devices.
+  _Yet another_ Go lib for [`ykman`](https://developers.yubico.com/yubikey-manager/) for requesting [OATH TOPT](https://en.wikipedia.org/wiki/Time-based_one-time_password) Multi-Factor Authentication Codes from [Yubikey](https://www.yubico.com/products/yubikey-5-overview/) Devices.
 
   </div>
   <hr/>
