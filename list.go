@@ -27,20 +27,32 @@ func ListWithPasswordPrompt(
 	options Options,
 ) (error, []string) {
 
+	err, result, _ := ListWithPasswordPromptAndCache(ctx, passwordPrompt, options)
+	return err, result
+}
+
+func ListWithPasswordPromptAndCache(
+	ctx context.Context,
+	passwordPrompt func(ctx context.Context) (error, string),
+	options Options,
+) (error, []string, string) {
+
 	if options.Password != "" {
-		return ErrPasswordNotAllowedWithPrompt, nil
+		return ErrPasswordNotAllowedWithPrompt, nil, ""
 	}
 
 	err, result := List(ctx, Options{DeviceID: options.DeviceID})
 
 	if err != ErrOathAccountPasswordProtected {
-		return err, result
+		return err, result, ""
 	}
 
 	err, password := passwordPrompt(ctx)
 	if err != nil {
-		return err, nil
+		return err, nil, ""
 	}
 
-	return List(ctx, Options{DeviceID: options.DeviceID, Password: password})
+	err, result = List(ctx, Options{DeviceID: options.DeviceID, Password: password})
+
+	return err, result, password
 }

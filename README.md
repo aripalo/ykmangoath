@@ -119,3 +119,19 @@ func main() {
 This will first try the perform the operation without a password and if it detects a password is required, it will run the _password prompt function_ you provided (`myPasswordPrompt`) and try again with its result.
 
 There's also a `ListWithPasswordPrompt` method to achieve the same password prompting functionality for [`List`](#list-accounts).
+
+<br/>
+
+### Retrieving the Password
+
+There are also `ListWithPasswordPromptAndCache` and `CodeWithPasswordPromptAndCache` methods that contain a third return value: The password that succesfully unlocked the Yubikey OATH application:
+```go
+err, code, password := ykmangoath.CodeWithPasswordPromptAndCache(
+	ctx,
+	myPasswordPrompt,
+	"<issuer>:<name>",
+	ykmangoath.Options{DeviceID: "12345678"},
+)
+```
+
+This can be useful if you wish to cache the Yubikey OATH application password for short periods of time in your own application. How you cache it (hopefully somewhat securely) is up to you.

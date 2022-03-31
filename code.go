@@ -32,23 +32,34 @@ func CodeWithPasswordPrompt(
 	account string,
 	options Options,
 ) (error, string) {
+	err, result, _ := CodeWithPasswordPromptAndCache(ctx, passwordPrompt, account, options)
+	return err, result
+}
+
+func CodeWithPasswordPromptAndCache(
+	ctx context.Context,
+	passwordPrompt func(ctx context.Context) (error, string),
+	account string,
+	options Options,
+) (error, string, string) {
 
 	if options.Password != "" {
-		return ErrPasswordNotAllowedWithPrompt, ""
+		return ErrPasswordNotAllowedWithPrompt, "", ""
 	}
 
 	err, result := Code(ctx, account, Options{DeviceID: options.DeviceID})
 
 	if err != ErrOathAccountPasswordProtected {
-		return err, result
+		return err, result, ""
 	}
 
 	err, password := passwordPrompt(ctx)
 	if err != nil {
-		return err, ""
+		return err, "", ""
 	}
 
-	return Code(ctx, account, Options{DeviceID: options.DeviceID, Password: password})
+	err, result = Code(ctx, account, Options{DeviceID: options.DeviceID, Password: password})
+	return err, result, password
 }
 
 func parseCode(output string) (error, string) {
