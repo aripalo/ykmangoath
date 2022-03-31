@@ -73,7 +73,8 @@ func main() {
 	defer cancel()
 
 	deviceSerial := "12345678" // can be empty string if you only use one Yubikey device
-	oathAccounts := ykmangoath.New(ctx, deviceSerial)
+	oathAccounts, err := ykmangoath.New(ctx, deviceSerial)
+	// handler err
 
 	// after this you can perform various operations on oathAccounts...
 }
