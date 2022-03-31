@@ -114,7 +114,8 @@ It must return a password `string` (which can be empty) and an `error` (which of
 
 ```go
 func myPasswordPrompt(ctx context.Context) (string, error) {
-	return "p4ssword", nil
+	password := "p4ssword" // in real life, you'd resolve this value by asking the end-user
+	return password, nil
 }
 
 err := oathAccounts.SetPasswordPrompt(myPasswordPrompt)
@@ -124,7 +125,8 @@ err := oathAccounts.SetPasswordPrompt(myPasswordPrompt)
 
 ```go
 func myPasswordPrompt(ctx context.Context) (string, error) {
-	return "p4ssword", nil
+	password := "p4ssword" // in real life, you'd resolve this value by asking the end-user
+	return password, nil
 }
 
 err := oathAccounts.SetPasswordPrompt(myPasswordPrompt)
