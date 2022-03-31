@@ -57,6 +57,7 @@ func main() {
 
 	deviceSerial := "12345678" // can be empty string if you only use one Yubikey device
 	oathAccounts := ykmangoath.New(ctx, deviceSerial)
+	// after this you can perform various operations on oathAccounts...
 }
 ```
 
