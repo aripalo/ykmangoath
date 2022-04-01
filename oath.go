@@ -34,6 +34,18 @@ func (oa *OathAccounts) GetSerial() string {
 	return oa.serial
 }
 
+// IsPasswordProtected checks whether the OATH application is password protected
+func (oa *OathAccounts) IsPasswordProtected() bool {
+	queryOptions := ykmanOptions{
+		serial:   oa.serial,
+		password: "",
+		args:     []string{"list"},
+	}
+
+	_, err := executeYkman(oa.ctx, queryOptions)
+	return err == ErrOathAccountPasswordProtected
+}
+
 // SetPassword directly configures the Yubikey OATH application password.
 // Mutually exclusive with SetPasswordPrompt.
 func (oa *OathAccounts) SetPassword(password string) error {
