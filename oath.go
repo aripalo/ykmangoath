@@ -43,7 +43,7 @@ func (oa *OathAccounts) IsAvailable() bool {
 	}
 
 	_, err := executeYkman(oa.ctx, queryOptions)
-	return err == ErrOathAccountPasswordProtected
+	return err == nil
 }
 
 // IsPasswordProtected checks whether the OATH application is password protected
