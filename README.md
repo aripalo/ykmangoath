@@ -152,6 +152,19 @@ But, if the device is configured with a password protected OATH application, it 
 
 There's also functionality to [retrieve the prompted password](#retrieve-the-prompted-password) given by end-user, so you may implement caching mechanisms to provide a smoother user experience where the end-user doesn't have to type in the password for every Yubikey operation; Remember there are of course tradeoffs with security vs. user experience with caching the password!
 
+## Check if Password Protected
+
+To check if the Yubikey OATH application is password protected you can use:
+```go
+isProtected := oathAccounts.IsPasswordProtected()
+fmt.Println(isProtected)
+```
+
+Example Go output:
+```go
+true
+```
+
 ## Direct Assign
 
 ```go
