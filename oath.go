@@ -34,12 +34,24 @@ func (oa *OathAccounts) GetSerial() string {
 	return oa.serial
 }
 
+// IsAvailable checks whether the Yubikey device is connected & available
+func (oa *OathAccounts) IsAvailable() bool {
+	queryOptions := ykmanOptions{
+		serial:   oa.serial,
+		password: "",
+		args:     []string{"info"},
+	}
+
+	_, err := executeYkman(oa.ctx, queryOptions)
+	return err == ErrOathAccountPasswordProtected
+}
+
 // IsPasswordProtected checks whether the OATH application is password protected
 func (oa *OathAccounts) IsPasswordProtected() bool {
 	queryOptions := ykmanOptions{
 		serial:   oa.serial,
 		password: "",
-		args:     []string{"list"},
+		args:     []string{"oath", "accounts", "list"},
 	}
 
 	_, err := executeYkman(oa.ctx, queryOptions)
@@ -80,7 +92,7 @@ func (oa *OathAccounts) List() ([]string, error) {
 	queryOptions := ykmanOptions{
 		serial:   oa.serial,
 		password: oa.password,
-		args:     []string{"list"},
+		args:     []string{"oath", "accounts", "list"},
 	}
 
 	oa.ensurePrompt()
@@ -99,7 +111,7 @@ func (oa *OathAccounts) Code(account string) (string, error) {
 	queryOptions := ykmanOptions{
 		serial:   oa.serial,
 		password: oa.password,
-		args:     []string{"code", "--single", account},
+		args:     []string{"oath", "accounts", "code", "--single", account},
 	}
 
 	oa.ensurePrompt()

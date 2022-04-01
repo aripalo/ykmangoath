@@ -17,28 +17,33 @@ func TestDefineYkmanArgs(t *testing.T) {
 		received []string
 	}{
 		{
-			name:     "empty options",
-			input:    ykmanOptions{},
+			name:     "defaults",
+			input:    ykmanOptions{args: []string{"oath", "accounts"}},
 			received: []string{"oath", "accounts"},
 		},
 		{
+			name:     "info",
+			input:    ykmanOptions{args: []string{"info"}},
+			received: []string{"info"},
+		},
+		{
 			name:     "with serial",
-			input:    ykmanOptions{serial: "12345678"},
+			input:    ykmanOptions{serial: "12345678", args: []string{"oath", "accounts"}},
 			received: []string{"--device", "12345678", "oath", "accounts"},
 		},
 		{
 			name:     "list accounts",
-			input:    ykmanOptions{args: []string{"list"}},
+			input:    ykmanOptions{args: []string{"oath", "accounts", "list"}},
 			received: []string{"oath", "accounts", "list"},
 		},
 		{
 			name:     "code for account",
-			input:    ykmanOptions{args: []string{"code", "--single", "Amazon Web Services:john.doe@example"}},
+			input:    ykmanOptions{args: []string{"oath", "accounts", "code", "--single", "Amazon Web Services:john.doe@example"}},
 			received: []string{"oath", "accounts", "code", "--single", "Amazon Web Services:john.doe@example"},
 		},
 		{
 			name:     "code for account with all options",
-			input:    ykmanOptions{serial: "12345678", args: []string{"code", "--single", "Amazon Web Services:john.doe@example"}},
+			input:    ykmanOptions{serial: "12345678", args: []string{"oath", "accounts", "code", "--single", "Amazon Web Services:john.doe@example"}},
 			received: []string{"--device", "12345678", "oath", "accounts", "code", "--single", "Amazon Web Services:john.doe@example"},
 		},
 	}
@@ -80,6 +85,13 @@ func TestProcessYkmanErrors(t *testing.T) {
 			name:         "yubikey not found",
 			err:          genericErr,
 			outputStderr: "Failed connecting to the YubiKey",
+			password:     "",
+			received:     ErrDeviceNotFound,
+		},
+		{
+			name:         "yubikey not found",
+			err:          genericErr,
+			outputStderr: "Failed to open device for communication",
 			password:     "",
 			received:     ErrDeviceNotFound,
 		},
