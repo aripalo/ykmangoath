@@ -69,8 +69,6 @@ func defineYkmanArgs(options ykmanOptions) []string {
 		args = append(args, "--device", options.serial)
 	}
 
-	// setup oath application arguments
-	args = append(args, "oath", "accounts")
 	args = append(args, options.args...)
 
 	return args
@@ -101,6 +99,9 @@ func processYkmanErrors(err error, outputStderr string, password string) error {
 
 		// check for yubikey device connection
 		if strings.Contains(outputStderr, "Failed connecting to the YubiKey") {
+			return ErrDeviceNotFound
+		}
+		if strings.Contains(outputStderr, "Failed to open device for communication") {
 			return ErrDeviceNotFound
 		}
 
