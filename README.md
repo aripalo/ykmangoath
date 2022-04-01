@@ -84,6 +84,21 @@ Once initialized, you may perform operations on `oathAccounts` such as [`List`](
 
 <br/>
 
+## Check if Device Available
+
+To verify if the configured Yubikey device is connected & available:
+```go
+IsAvailable := oathAccounts.IsAvailable()
+fmt.Println(IsAvailable)
+```
+
+Example Go output:
+```go
+true
+```
+
+<br/>
+
 ## List Accounts
 
 List OATH accounts configured in the Yubikey device:
