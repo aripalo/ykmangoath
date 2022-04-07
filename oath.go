@@ -105,7 +105,7 @@ func (oa *OathAccounts) List() ([]string, error) {
 	return getLines(output), nil
 }
 
-// Code requests a Time-based one-time password (TOPT) 6-digit code for given
+// Code requests a Time-based one-time password (TOTP) 6-digit code for given
 // account (such as "<issuer>:<name>") from Yubikey OATH application.
 func (oa *OathAccounts) Code(account string) (string, error) {
 	queryOptions := ykmanOptions{
@@ -132,7 +132,7 @@ func (oa *OathAccounts) ensurePrompt() {
 	}
 }
 
-// parseCode retrieves the generated 6 digit OATH TOPT code from output
+// parseCode retrieves the generated 6 digit OATH TOTP code from output
 func parseCode(output string) (string, error) {
 	result := yubikeyTokenFindPattern.FindString(strings.TrimSpace(output))
 	if result == "" {
@@ -142,5 +142,5 @@ func parseCode(output string) (string, error) {
 	return result, nil
 }
 
-// yubikeyTokenFindPattern describes the regexp that will match OATH TOPT MFA token code from Yubikey
+// yubikeyTokenFindPattern describes the regexp that will match OATH TOTP MFA token code from Yubikey
 var yubikeyTokenFindPattern = regexp.MustCompile(`\d{6}\d*$`)

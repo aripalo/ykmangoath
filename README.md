@@ -5,11 +5,11 @@
   <h1>
   <code>ykmangoath</code>
   <br/>
-  <span>Ykman OATH TOPT with Go</span>
+  <span>Ykman OATH TOTP with Go</span>
   </h1>
   <div>
 
-  _Yet another_ [`ykman`](https://developers.yubico.com/yubikey-manager/) Go lib for requesting [OATH TOPT](https://en.wikipedia.org/wiki/Time-based_one-time_password) Multi-Factor Authentication Codes from [Yubikey](https://www.yubico.com/products/yubikey-5-overview/) Devices.
+  _Yet another_ [`ykman`](https://developers.yubico.com/yubikey-manager/) Go lib for requesting [OATH TOTP](https://en.wikipedia.org/wiki/Time-based_one-time_password) Multi-Factor Authentication Codes from [Yubikey](https://www.yubico.com/products/yubikey-5-overview/) Devices.
 
   </div>
   <hr/>
@@ -19,7 +19,7 @@
 
 🚧  **Work-in-Progress**
 
-There are already [some](https://github.com/99designs/aws-vault/blob/master/prompt/ykman.go) [packages](https://github.com/joshdk/ykmango) out there which already wrap Yubikey CLI for Go to manage OATH TOPT, but they lack all or some of the following features:
+There are already [some](https://github.com/99designs/aws-vault/blob/master/prompt/ykman.go) [packages](https://github.com/joshdk/ykmango) out there which already wrap Yubikey CLI for Go to manage OATH TOTP, but they lack all or some of the following features:
 
 - **Go Context support** (handy for timeouts/cancellation etc)
 - **Multiple Yubikeys** (identified by Device Serial Number)
@@ -35,7 +35,7 @@ This library supports only a small subset of features of Yubikeys & OATH account
 
 ### Requirements
 
-- Yubikey Series 5 device (or newer with a `OATH TOPT` support)
+- Yubikey Series 5 device (or newer with a `OATH TOTP` support)
 - [`ykman`](https://developers.yubico.com/yubikey-manager/) Yubikey Manager CLI as a runtime dependency
 - Go `1.18` or newer (for development)
 
@@ -128,7 +128,7 @@ Example Go output:
 
 ## Request Code
 
-Requests a _Time-based One-Time Password_ (TOPT) 6-digit code for given account (such as "<issuer>:<name>") from Yubikey OATH application.
+Requests a _Time-based One-Time Password_ (TOTP) 6-digit code for given account (such as "<issuer>:<name>") from Yubikey OATH application.
 
 ```go
 account := "<issuer>:<name>"
@@ -154,7 +154,7 @@ Example Go output:
 
 ## Managing Password
 
-An end-user with Yubikey device may wish to password protect the Yubikey's OATH application. Generally speaking this is a good idea as it adds some protection from theft: A bad actor with someone else's Yubikey device can't actually use the device to generate TOPT MFA codes unless they somehow also know the device password.
+An end-user with Yubikey device may wish to password protect the Yubikey's OATH application. Generally speaking this is a good idea as it adds some protection from theft: A bad actor with someone else's Yubikey device can't actually use the device to generate TOTP MFA codes unless they somehow also know the device password.
 
 The password protection for the Yubikey device's OATH application can be set either via the Yubico Authenticator GUI application or via command-line with `ykman` by running:
 ```sh
@@ -241,7 +241,7 @@ This can be useful if you wish to cache the Yubikey OATH application password fo
 ### This tool is designed only for _retrieval_ of specific information from a Yubikey device:
 
 - List of configured OATH accounts
-- _Time-based One-Time Password_ (TOPT) code for given OATH account
+- _Time-based One-Time Password_ (TOTP) code for given OATH account
 - ... with a support for password protected Yubikey OATH applications
 
 ### By design, this tool does NOT support:
