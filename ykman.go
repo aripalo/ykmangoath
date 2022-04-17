@@ -20,13 +20,17 @@ func NewYkman(ctx context.Context, serial string) *Ykman {
 }
 
 func (y *Ykman) Execute(args []string) (string, error) {
+
+	var finalArgs []string
+
 	// only apply device argument if an id is given
 	if y.serial != "" {
-		args = append(args, "--device", y.serial)
+		finalArgs = append(finalArgs, "--device", y.serial)
+		finalArgs = append(finalArgs, args...)
 	}
 
 	// define the ykman command to be run
-	cmd := exec.CommandContext(y.ctx, "ykman", args...)
+	cmd := exec.CommandContext(y.ctx, "ykman", finalArgs...)
 
 	// in case a password is provided, provide it to ykman via stdin
 	// it's better to pass it in via stdin as it will fail on empty string immediately
