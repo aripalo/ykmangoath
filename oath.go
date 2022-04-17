@@ -23,7 +23,7 @@ type OathAccounts struct {
 
 // New defines a new instance of OathAccounts.
 func New(ctx context.Context, serial string) (OathAccounts, error) {
-	oa := OathAccounts{ctx: ctx}
+	oa := OathAccounts{ctx: ctx, serial: serial}
 	oa.ykman = *NewYkman(ctx, oa.serial)
 	result := deviceSerialPattern.FindString(oa.serial)
 	if result == "" {
