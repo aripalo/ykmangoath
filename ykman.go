@@ -9,42 +9,30 @@ import (
 	"syscall"
 )
 
-// ykmanOptions controls the ykman operation performed
-type ykmanOptions struct {
+type Ykman struct {
+	ctx      context.Context
 	serial   string
 	password string
-	args     []string
 }
 
-func executeYkmanWithPrompt(ctx context.Context, options ykmanOptions, prompt func(ctx context.Context) (string, error)) (string, error) {
-	result, err := executeYkman(ctx, options)
-	if err != ErrOathAccountPasswordProtected {
-		return result, err
-	}
-
-	password, err := prompt(ctx)
-	if err != nil {
-		return "", err
-	}
-
-	options.password = password
-
-	return executeYkman(ctx, options)
+func NewYkman(ctx context.Context, serial string) *Ykman {
+	return &Ykman{ctx: ctx, serial: serial}
 }
 
-// executeYkman executes ykman with given options and handles most common errors
-func executeYkman(ctx context.Context, options ykmanOptions) (string, error) {
-
-	args := defineYkmanArgs(options)
+func (y *Ykman) Execute(args []string) (string, error) {
+	// only apply device argument if an id is given
+	if y.serial != "" {
+		args = append(args, "--device", y.serial)
+	}
 
 	// define the ykman command to be run
-	cmd := exec.CommandContext(ctx, "ykman", args...)
+	cmd := exec.CommandContext(y.ctx, "ykman", args...)
 
 	// in case a password is provided, provide it to ykman via stdin
 	// it's better to pass it in via stdin as it will fail on empty string immediately
 	// if the oath is password protected
 	var b bytes.Buffer
-	b.Write([]byte(fmt.Sprintf("%s\n", options.password)))
+	b.Write([]byte(fmt.Sprintf("%s\n", y.password)))
 	cmd.Stdin = &b
 
 	// redirect stdout & stderr into byte buffer
@@ -55,23 +43,26 @@ func executeYkman(ctx context.Context, options ykmanOptions) (string, error) {
 	// execute the ykman command
 	err := cmd.Run()
 
-	err = processYkmanErrors(err, errb.String(), options.password)
+	err = processYkmanErrors(err, errb.String(), y.password)
 
 	// finally return the ykman output
 	return outb.String(), err
 }
 
-func defineYkmanArgs(options ykmanOptions) []string {
-	args := []string{}
-
-	// only apply device argument if an id is given
-	if options.serial != "" {
-		args = append(args, "--device", options.serial)
+func (y *Ykman) ExecuteWithPrompt(args []string, prompt func(ctx context.Context) (string, error)) (string, error) {
+	result, err := y.Execute(args)
+	if err != ErrOathAccountPasswordProtected {
+		return result, err
 	}
 
-	args = append(args, options.args...)
+	password, err := prompt(y.ctx)
+	if err != nil {
+		return "", err
+	}
 
-	return args
+	y.password = password
+
+	return y.Execute(args)
 }
 
 func processYkmanErrors(err error, outputStderr string, password string) error {

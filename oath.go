@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"golang.org/x/exp/slices"
 )
 
 // deviceSerialPattern ensures the given Yubikey device serial is either empty string or at least 8 digits
@@ -16,14 +18,16 @@ type OathAccounts struct {
 	ctx            context.Context
 	serial         string
 	password       string
+	ykman          Ykman
 }
 
 // New defines a new instance of OathAccounts.
 func New(ctx context.Context, serial string) (OathAccounts, error) {
 	oa := OathAccounts{ctx: ctx}
-	result := deviceSerialPattern.FindString(serial)
+	oa.ykman = *NewYkman(ctx, oa.serial)
+	result := deviceSerialPattern.FindString(oa.serial)
 	if result == "" {
-		return oa, fmt.Errorf("%w: %v", ErrDeviceSerial, serial)
+		return oa, fmt.Errorf("%w: %v", ErrDeviceSerial, oa.serial)
 	}
 	oa.serial = serial
 	return oa, nil
@@ -36,25 +40,13 @@ func (oa *OathAccounts) GetSerial() string {
 
 // IsAvailable checks whether the Yubikey device is connected & available
 func (oa *OathAccounts) IsAvailable() bool {
-	queryOptions := ykmanOptions{
-		serial:   oa.serial,
-		password: "",
-		args:     []string{"info"},
-	}
-
-	_, err := executeYkman(oa.ctx, queryOptions)
+	_, err := oa.ykman.Execute([]string{"info"})
 	return err == nil
 }
 
 // IsPasswordProtected checks whether the OATH application is password protected
 func (oa *OathAccounts) IsPasswordProtected() bool {
-	queryOptions := ykmanOptions{
-		serial:   oa.serial,
-		password: "",
-		args:     []string{"oath", "accounts", "list"},
-	}
-
-	_, err := executeYkman(oa.ctx, queryOptions)
+	_, err := oa.ykman.Execute([]string{"oath", "accounts", "list"})
 	return err == ErrOathAccountPasswordProtected
 }
 
@@ -81,22 +73,16 @@ func (oa *OathAccounts) SetPasswordPrompt(prompt func(ctx context.Context) (stri
 
 // GetPassword returns the password that successfully unlocked the Yubikey OATH application.
 func (oa *OathAccounts) GetPassword() (string, error) {
-	if oa.password == "" {
+	if oa.ykman.password == "" {
 		return "", ErrNoPassword
 	}
-	return oa.password, nil
+	return oa.ykman.password, nil
 }
 
 // List returns a list of configured accounts in the Yubikey OATH application.
 func (oa *OathAccounts) List() ([]string, error) {
-	queryOptions := ykmanOptions{
-		serial:   oa.serial,
-		password: oa.password,
-		args:     []string{"oath", "accounts", "list"},
-	}
-
 	oa.ensurePrompt()
-	output, err := executeYkmanWithPrompt(oa.ctx, queryOptions, oa.passwordPrompt)
+	output, err := oa.ykman.ExecuteWithPrompt([]string{"oath", "accounts", "list"}, oa.passwordPrompt)
 
 	if err != nil {
 		return nil, err
@@ -105,17 +91,22 @@ func (oa *OathAccounts) List() ([]string, error) {
 	return getLines(output), nil
 }
 
+// HasAccount returns a boolean indicating if the device has the given account
+// configured in its OATH application.
+func (oa *OathAccounts) HasAccount(account string) (bool, error) {
+	accounts, err := oa.List()
+	if err != nil {
+		return false, err
+	}
+
+	return slices.Contains(accounts, account), err
+}
+
 // Code requests a Time-based one-time password (TOTP) 6-digit code for given
 // account (such as "<issuer>:<name>") from Yubikey OATH application.
 func (oa *OathAccounts) Code(account string) (string, error) {
-	queryOptions := ykmanOptions{
-		serial:   oa.serial,
-		password: oa.password,
-		args:     []string{"oath", "accounts", "code", "--single", account},
-	}
-
 	oa.ensurePrompt()
-	output, err := executeYkmanWithPrompt(oa.ctx, queryOptions, oa.passwordPrompt)
+	output, err := oa.ykman.ExecuteWithPrompt([]string{"oath", "accounts", "code", "--single", account}, oa.passwordPrompt)
 
 	if err != nil {
 		return output, err

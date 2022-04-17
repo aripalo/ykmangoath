@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+/*
 func TestDefineYkmanArgs(t *testing.T) {
 
 	tests := []struct {
@@ -58,6 +59,8 @@ func TestDefineYkmanArgs(t *testing.T) {
 		})
 	}
 }
+
+*/
 
 func TestProcessYkmanErrors(t *testing.T) {
 
