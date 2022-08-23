@@ -10,7 +10,7 @@ import (
 )
 
 // deviceSerialPattern ensures the given Yubikey device serial is either empty string or at least 8 digits
-var deviceSerialPattern = regexp.MustCompile(`^$|^\d{8,}$`)
+var deviceSerialPattern = regexp.MustCompile(`^$|^\d+$`)
 
 // OathAccounts represents a the main functionality of Yubikey OATH accounts.
 type OathAccounts struct {
